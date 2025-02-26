@@ -63,6 +63,12 @@ class MyGesAPI:
         response.raise_for_status()
         return response.json()
 
+    def _post_request(self, endpoint, data):
+        url = f"{BASE_URL}{endpoint}"
+        response = requests.post(url, headers=self.headers, data=data, timeout=10)
+        response.raise_for_status()
+        return response.json()
+
     def get_profile(self):
         return self._make_request("profile")
 
@@ -93,3 +99,15 @@ class MyGesAPI:
 
     def get_student(self, student_id):
         return self._make_request(f"students/{student_id}")
+
+    def get_next_events(self):
+        now = int(datetime.now().timestamp() * 1000)
+        events = self._make_request("events")["result"]
+        res = {}
+        for event in events:
+            if event["event_date"] > now:
+                res[event["event_id"]] = event
+        return res
+
+    def get_event(self, event_id):
+        return self._make_request(f"event/{event_id}")
