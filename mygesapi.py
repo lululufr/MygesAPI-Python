@@ -41,6 +41,7 @@ class MyGesAPI:
         response = requests.get(
             self.auth_url, headers=auth_headers, allow_redirects=False
         )
+        print(response.headers)
 
         self._extract_auth_token(response.headers["location"])
 
