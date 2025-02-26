@@ -1,4 +1,4 @@
-from mygesapi import MyGesAPI
+from myges import MyGesAPI
 
 import json
 
