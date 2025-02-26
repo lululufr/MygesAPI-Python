@@ -1,10 +1,17 @@
 from myges import MyGesAPI
 from datetime import datetime
-
+from myges_to_notion import *
+import os
+import dotenv
 
 import json
 
-api = MyGesAPI()
-profile = api.get_profile()
+# myges = MyGesAPI()
+# events = myges.get_next_events(30)
+# print(events["result"][1])
 
-print(profile)
+notion = NotionAPI()
+
+DATABASE_ID = os.getenv("DATABASE_ID")
+
+notion.import_myges_to_notion_calendar(DATABASE_ID, 30)
