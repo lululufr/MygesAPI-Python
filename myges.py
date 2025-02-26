@@ -41,8 +41,6 @@ class MyGesAPI:
         response = requests.get(
             self.auth_url, headers=auth_headers, allow_redirects=False
         )
-        print(response.headers)
-
         self._extract_auth_token(response.headers["location"])
 
     def _extract_auth_token(self, location_header):
@@ -72,10 +70,9 @@ class MyGesAPI:
     def get_profile(self):
         return self._make_request("profile")
 
-    def get_agenda(self, start_date=None, end_date=None):
-        today = datetime.now()
-        start = start_date or today.replace(day=1)
-        end = end_date or start + timedelta(days=60)
+    def get_agenda(self, number_of_day):
+        start = datetime.now()
+        end = start + timedelta(days=number_of_day)
         return self._make_request(
             "agenda",
             params={
