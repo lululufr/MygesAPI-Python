@@ -97,13 +97,12 @@ class MyGesAPI:
 
     def get_student(self, student_id):
         return self._make_request(f"students/{student_id}")
-        
+
     def get_next_events(self):
         today = datetime.now()
         req = self._make_request("events")
         res = []
         for event in req['result']:
-            # Convertit le timestamp (en millisecondes) en datetime
             event_datetime = datetime.fromtimestamp(event['event_date'] / 1000)
             if event_datetime > today:
                 res.append(event)
