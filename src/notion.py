@@ -1,9 +1,9 @@
-from myges import MyGesAPI
 import json
 import requests
 import dotenv
 import os
 import datetime
+import re
 
 dotenv.load_dotenv()
 
@@ -84,13 +84,36 @@ class NotionAPI:
         response.raise_for_status()
         return response.json()
 
-    def import_myges_to_notion_calendar(self, database_id, nb_of_day):
-        myges = MyGesAPI()
-        events = myges.get_agenda(nb_of_day)
+    def delete_event(self, block_id):
+        url = f"{self.BASE_URL}/blocks/{block_id}"
+        response = requests.delete(url, headers=self.headers, timeout=10)
+        response.raise_for_status()
+        return response.json()
 
-        cpt = 0
-        size = len(events["result"])
-        for event in events["result"]:
-            cpt += 1
-            self.create_event(database_id, event)
-            print(f"Event {cpt}/{size}")
+
+    def delete_notion_calendar_old_event(self, database_id):
+        """Efface TOUT les événements plus vieux que aujourd'hui"""
+        NotionEvents = self.get_events_database(database_id)
+        
+        tz = datetime.timezone(datetime.timedelta(hours=1))
+
+        now = datetime.datetime.now(tz=tz)
+        date_aujourdhui = datetime.datetime.combine(now.date(), datetime.time(17, 30, 0, tzinfo=tz))
+        date_iso = date_aujourdhui.isoformat(timespec='milliseconds')
+        print("Suppression des evenements plus vieux que : ", date_iso)
+
+        for event in NotionEvents['results']: 
+            try :
+                match = re.search(r".*-(.+)$", event['url'])
+
+                notion_start = event['properties']['Date']['date']['start']
+                print("Notion start brute :", notion_start)
+
+                notion_start_dt = datetime.datetime.fromisoformat(notion_start)
+
+                if notion_start_dt > date_aujourdhui:
+                    print("Suppression :", notion_start_dt)
+                    self.delete_event(match.group(1))
+            except:
+                print("erreur suppression")
+

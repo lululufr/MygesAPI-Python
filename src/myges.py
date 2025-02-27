@@ -85,14 +85,15 @@ class MyGesAPI:
     def get_grades(self, years):
         return self._make_request(f"{years}/grades")
 
-    def get_absences(self, years):
-        return self._make_request(f"{years}/absences")
+    #cassé
+    #def get_absences(self, years):
+    #    return self._make_request(f"{years}/absences")
 
     def get_classes(self, years):
         return self._make_request(f"{years}/classes")
 
-    def get_students(self):
-        class_id = self.get_classes(2024)["result"][0]["puid"]
+    def get_students(self, years):
+        class_id = self.get_classes(years)["result"][0]["puid"]
         return self._make_request(f"classes/{class_id}/students")
 
     def get_student(self, student_id):
