@@ -86,7 +86,7 @@ class NotionAPI:
 
     def import_myges_to_notion_calendar(self, database_id, nb_of_day):
         myges = MyGesAPI()
-        events = myges.get_next_events(nb_of_day)
+        events = myges.get_agenda(nb_of_day)
 
         cpt = 0
         size = len(events["result"])

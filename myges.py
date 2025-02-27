@@ -71,7 +71,8 @@ class MyGesAPI:
         return self._make_request("profile")
 
     def get_agenda(self, number_of_day):
-        start = datetime.now()
+        today = datetime.now()
+        start = today.replace(hour=0, minute=0, second=0, microsecond=0)
         end = start + timedelta(days=number_of_day)
         return self._make_request(
             "agenda",
@@ -96,18 +97,18 @@ class MyGesAPI:
 
     def get_student(self, student_id):
         return self._make_request(f"students/{student_id}")
-
-    def get_next_events(self, number_of_day):
+        
+    def get_next_events(self):
         today = datetime.now()
-        start = today.replace(hour=0, minute=0, second=0, microsecond=0)
-        end = start + timedelta(days=number_of_day)
-        return self._make_request(
-            "agenda",
-            params={
-                "start": int(start.timestamp()) * 1000,
-                "end": int(end.timestamp()) * 1000,
-            },
-        )
+        req = self._make_request("events")
+        res = []
+        for event in req['result']:
+            # Convertit le timestamp (en millisecondes) en datetime
+            event_datetime = datetime.fromtimestamp(event['event_date'] / 1000)
+            if event_datetime > today:
+                res.append(event)
+        return res
+
 
     def get_event(self, event_id):
         return self._make_request(f"event/{event_id}")

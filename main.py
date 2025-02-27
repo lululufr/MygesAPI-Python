@@ -6,12 +6,10 @@ import dotenv
 
 import json
 
-# myges = MyGesAPI()
-# events = myges.get_next_events(30)
-# print(events["result"][1])
+myges = MyGesAPI()
+events = myges.get_next_events()
+print(events)
 
-notion = NotionAPI()
-
-DATABASE_ID = os.getenv("DATABASE_ID")
-
-notion.import_myges_to_notion_calendar(DATABASE_ID, 30)
+#notion = NotionAPI()
+#DATABASE_ID = os.getenv("DATABASE_ID")
+#notion.import_myges_to_notion_calendar(DATABASE_ID, 30)
