@@ -34,10 +34,13 @@ class NotionAPI:
     def parse_myges_to_notion_event(self, database_id, event):
         try:
             rooms = [{"name": room["name"]} for room in event["rooms"]]
-        except:
+        except (KeyError, TypeError):
             rooms = [{"name": "Aucune salle"}]
 
-        campus = event["rooms"][0]["campus"]
+        try:
+            campus = event["rooms"][0]["campus"]
+        except (KeyError, TypeError, IndexError):
+            campus = "Campus inconnu"  # Or a suitable default value
 
         start_timestamp = event["start_date"] / 1000
         end_timestamp = event["end_date"] / 1000
