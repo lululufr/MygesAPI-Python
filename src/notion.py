@@ -32,7 +32,10 @@ class NotionAPI:
         return response.json()
 
     def parse_myges_to_notion_event(self, database_id, event):
-        rooms = [{"name": room["name"]} for room in event["rooms"]]
+        try:
+            rooms = [{"name": room["name"]} for room in event["rooms"]]
+        except:
+            rooms = [{"name": "Aucune salle"}]
 
         campus = event["rooms"][0]["campus"]
 
@@ -90,23 +93,24 @@ class NotionAPI:
         response.raise_for_status()
         return response.json()
 
-
     def delete_notion_calendar_old_event(self, database_id):
         """Efface TOUT les événements plus vieux que aujourd'hui"""
         NotionEvents = self.get_events_database(database_id)
-        
+
         tz = datetime.timezone(datetime.timedelta(hours=1))
 
         now = datetime.datetime.now(tz=tz)
-        date_aujourdhui = datetime.datetime.combine(now.date(), datetime.time(17, 30, 0, tzinfo=tz))
-        date_iso = date_aujourdhui.isoformat(timespec='milliseconds')
+        date_aujourdhui = datetime.datetime.combine(
+            now.date(), datetime.time(17, 30, 0, tzinfo=tz)
+        )
+        date_iso = date_aujourdhui.isoformat(timespec="milliseconds")
         print("Suppression des evenements plus vieux que : ", date_iso)
 
-        for event in NotionEvents['results']: 
-            try :
-                match = re.search(r".*-(.+)$", event['url'])
+        for event in NotionEvents["results"]:
+            try:
+                match = re.search(r".*-(.+)$", event["url"])
 
-                notion_start = event['properties']['Date']['date']['start']
+                notion_start = event["properties"]["Date"]["date"]["start"]
                 print("Notion start brute :", notion_start)
 
                 notion_start_dt = datetime.datetime.fromisoformat(notion_start)
@@ -116,4 +120,3 @@ class NotionAPI:
                     self.delete_event(match.group(1))
             except:
                 print("erreur suppression")
-
