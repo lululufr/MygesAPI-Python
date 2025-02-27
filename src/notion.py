@@ -40,7 +40,7 @@ class NotionAPI:
         try:
             campus = event["rooms"][0]["campus"]
         except (KeyError, TypeError, IndexError):
-            campus = "Campus inconnu"  # Or a suitable default value
+            campus = "Campus inconnu"
 
         start_timestamp = event["start_date"] / 1000
         end_timestamp = event["end_date"] / 1000
