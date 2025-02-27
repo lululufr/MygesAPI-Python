@@ -3,8 +3,12 @@
 ## Fonctionnalités
 
 - Utilisation de l'API myges - simple of use.
+  - ( comprend l'inscription a des events )
 - Synchronisation du calendrier de MyGes vers Notion.
-  - (gestion des doublons a venir)
+
+## A venir 
+
+Plugin n8n 
 
 ## Prérequis
 
@@ -35,19 +39,38 @@ Attention : Ne partagez jamais votre fichier .env et pensez à l'ajouter à votr
 ### Exemples d'utilisation
 
 ```python
-from myges import MyGesAPI
+myges = MyGesAPI()
 
-# Instanciation de l'API MyGes
-myges_api = MyGesAPI()
+notion = NotionAPI()
 
-# Récupérer le profil de l'utilisateur
-profile = myges_api.get_profile()
-print(profile)
+"""Récupérer les événements a venir"""
+events = myges.get_next_events()
+print(events)
 
-# Récupérer l'agenda pour les 5 prochains jours
-agenda = myges_api.get_next_events(number_of_day=5)
+"""Afficher son profile"""
+profil = myges.get_profile()
+print(profil)
+
+"""Afficher ses notes"""
+grades = myges.get_grades(2024)
+print(grades)
+
+
+"""Afficher les etudiants de sa classe année en param"""
+student = myges.get_students(2024)
+print(student)
+
+"""Agenda Myges"""
+agenda = myges.get_agenda(30)
 print(agenda)
 
+#### Une API Notion est aussi DISPO 
+
+notion = NotionAPI()
+
+"""importe dans la database id les 30 prochain jour du calendier myges
+Attention efface les événements plus vieux que maintenant"""
+#import_myges_to_notion_calendar(DATABASE_ID,30)
 ```
 
 Classe NotionAPI
@@ -61,8 +84,8 @@ La création de pages/événements dans Notion.
 
 ```python
 
-from myges import MyGesAPI
-from notion import NotionAPI
+from src.myges import MyGesAPI
+from src.notion import NotionAPI
 
 # Identifiant de la base de données Notion où les événements seront importés
 DATABASE_ID = "VotreIDDeDatabaseNotion"
