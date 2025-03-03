@@ -97,29 +97,36 @@ class NotionAPI:
         return response.json()
 
     def delete_notion_calendar_old_event(self, database_id):
-        """Efface TOUT les événements plus vieux que aujourd'hui"""
         NotionEvents = self.get_events_database(database_id)
 
         tz = datetime.timezone(datetime.timedelta(hours=1))
-
         now = datetime.datetime.now(tz=tz)
+
         date_aujourdhui = datetime.datetime.combine(
-            now.date(), datetime.time(17, 30, 0, tzinfo=tz)
+            now.date(),
+            datetime.time(0, 0, 0, tzinfo=tz),
         )
         date_iso = date_aujourdhui.isoformat(timespec="milliseconds")
-        print("Suppression des evenements plus vieux que : ", date_iso)
+        print(f"Suppression des événements à VENIR : {date_iso}")
 
         for event in NotionEvents["results"]:
             try:
+                if not event["properties"]["Date"]["date"]:
+                    continue
+
                 match = re.search(r".*-(.+)$", event["url"])
+                if not match:
+                    print(f"URL invalide pour l'événement: {event}")
+                    continue
 
                 notion_start = event["properties"]["Date"]["date"]["start"]
-                print("Notion start brute :", notion_start)
-
                 notion_start_dt = datetime.datetime.fromisoformat(notion_start)
 
-                if notion_start_dt > date_aujourdhui:
-                    print("Suppression :", notion_start_dt)
+                if notion_start_dt >= date_aujourdhui:
+                    print(f"Suppression de {notion_start_dt.isoformat()}")
                     self.delete_event(match.group(1))
-            except:
-                print("erreur suppression")
+
+            except KeyError as e:
+                print(f"Erreur de structure de données: {e}")
+            except Exception as e:
+                print(f"Erreur lors de la suppression: {e}")
